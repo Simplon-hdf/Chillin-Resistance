@@ -9,7 +9,7 @@ Pour cette application , nous avons été confronté à différentes problèmati
 ************************************************************************************************************
 
 # a \ Sauvegarde
-     Nous avons utilisé la sauvegarde (backup en anglais) pour dupliquer et à mettre en sécurité les données contenues dans le base de donnée de la'application.
+     Nous avons utilisé la sauvegaSimon-Libert/Chillin-Resistancerde (backup en anglais) pour dupliquer et à mettre en sécurité les données contenues dans le base de donnée de la'application.
 
     Pour realiser l'objectif de la sauvegarde, nous avons utilisé la stratégie de sauvegarde la pluce efficace (La stratégie de sauvegarde 3-2-1).
 
