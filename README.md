@@ -1,5 +1,7 @@
 # Chillin-Resistance
 
+Pour cette application , nous avons été confronté à différentes problèmatiques concernant la sécurité. Nous avons mis en oeuvre un process détaillé pour chaque grande partie importante que nous allons décrire ci-dessous.
+
 # Stratégie de Sécurisation d'une application🔒
 
     Mesures visant à empêcher le vol ou le piratage des données.
@@ -106,5 +108,127 @@ Nous allons utiliser les cookies pour avoir des informations sur les préférenc
 
 
 ************************************************************************************************************
+
+## Les requêtes et la sécurisation de l'API
+
+En ce qui concerne les requêtes http, nous allons mettre en place un système de sécurisation qui va permettre d'éviter certaines attaques cibles, compte tenu du fait que le client va en permanence faire des requêtes vers nos APIs (application programming interface que l'on va créer afin d'appeler à la demande du client - lors du visionnage d'une vidéo - les vidéos stockées)lors des visionnages des différents cours proposés : 
+
+- Cela commence par la configuration des **CORS** (Cross-origin resource sharing
+ ou partage des ressources entre origines multiples) : 
+ C'est un mécanisme qui consiste à ajouter des en-têtes HTTP afin de permettre à 
+un agent utilisateur d'accéder à des ressources d'un serveur situé sur 
+une autre origine que le site courant. Un agent utilisateur réalise une 
+requête HTTP **multi-origine (*cross-origin*)** lorsqu'il demande une ressource provenant d'un domaine, d'un protocole ou d'un port différent de ceux utilisés pour la page courante.
+
+Le CORS permet de prendre en charge des requêtes multi-origines 
+sécurisées et des transferts de données entre des navigateurs et des 
+serveurs web. Les navigateurs récents utilisent le CORS dans une API 
+contenante comme `[XMLHttpRequest](https://developer.mozilla.org/fr/docs/Web/API/XMLHttpRequest)`
+ ou `[Fetch](https://developer.mozilla.org/fr/docs/Web/API/Fetch_API)`
+ pour aider à réduire les risques de requêtes HTTP multi-origines.
+
+- exemple de requête fetch vers une api : 
+
+```
+export const getEventById = async (id, token) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/events/${id}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
+      }
+    }
+  )
+  const data = await res.json()
+  return data.event}
+
+```
+
+On remarque que lors de notre requête nous configuronsle type de content, ainsi que le passage d'un token (une clef chiffrée) afin de sécurisé l'appel API. Puis une réponse est attendue.
+
+On met également en place les SOP : same origin policy. Nous vérifions que deux pages ont la même origine si le protocole - HTTP -, le port (si spécifié) et l'hôte - store.company -sont les mêmes pour les deux pages. Le tableau suivant présente des comparaisons d'origines pour l'URL
+
+exemple : 
+
+| http://store.company.com/dir2/other.html | Succès |  |
+| --- | --- | --- |
+| http://store.company.com/dir/inner/another.html | Succès |  |
+| https://store.company.com/secure.html | Échec | Protocoles différents |
+| http://store.company.com:81/dir/etc.html | Échec | Ports différents |
+| http://news.company.com/dir/other.html | Échec | Hôtes différents |
+
+La mise en place de requête HTTP permet aussi d'élaborer une stratégie de sécurisation de contenu : le CSP que l'on place dans l'entête de la requête - dans le HEADER -.
+
+**D'ailleurs la mise en place d'un CSP permet également de réduire l'impact des requêtes silencieuses via CSP** - voir [requêtes silencieuses][] -
+
+Aujourd'hui la norme pour les requêtes HTTP est l'ajout du **HSTS** qui fait la transmission d’un en-tête HTTP lors de l’accès au site en HTTPS pour assurer son intégrité.
+
+Il est obligatoire de posséder le protocole **HTTPS** afin de garantir la sécurité des données et de l'utilisation de l'application à l'utilisateur. La mise en place de HTTPS a pour objectif :
+■ de garantir, autant que possible, l’authenticité du site consulté ;
+■ de garantir également l’intégrité et la confidentialité des données échangées en bloquant les
+attaques de type Man-In-The-Middle (écoute, interception ou modification des échanges à la
+volée par des tiers, à l’insu de l’utilisateur).
+
+Nous utiliserons également le protocole TLS, un protocole important de communication sur les réseaux et internet. Il permet une communication chiffrée entre un client et un serveur. Les données applicatives sont encapsulées de manière à assurer la confidentialité et l’intégrité des échanges. Le serveur est nécessairement authentifié, et des fonctions additionnelles permettent l’authentification du client lorsqu’un tel besoin a été identifié.C’est un protocole en poignée de main (Handshake) car le client et le serveur **négocie la connexion TLS**.
+TLS est utilisé pour la connexion des sites HTTPS. Mais depuis, on trouve des déclinaisons par exemple avec les protocoles POP ou SMTP pour les serveurs mails (MTA).
+
+**Sécurisation d’API :**
+
+Les fonctionnalités des API Web sont soumises aux mêmes 
+considérations de sécurité que JavaScript et les autres technologies web
+ (par exemple [same-origin policy](https://developer.mozilla.org/fr/docs/Web/Security/Same-origin_policy)),
+ mais elles disposent parfois de mécanismes de sécurité supplémentaires.
+ Par exemple, certaines des API Web les plus modernes ne fonctionneront 
+que sur des pages servies par HTTPS, car elles transmettent des données 
+potentiellement sensibles (par exemple [Service Workers](https://developer.mozilla.org/fr/docs/Web/API/Service_Worker_API) et [Push](https://developer.mozilla.org/fr/docs/Web/API/Push_API)).
+
+En outre, certaines API Web demandent la permission d'être activées à
+ l'utilisateur une fois que les appels à ces interfaces sont effectués 
+dans votre code. À titre d'exemple, l'API [Notifications API](https://developer.mozilla.org/fr/docs/Web/API/Notifications_API) demande la permission à l'aide d'une boîte de dialogue contextuelle :
+
+![https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Introduction/notification-permission.png](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Introduction/notification-permission.png)
+
+Les API Web Audio et `[HTMLMediaElement](https://developer.mozilla.org/fr/docs/Web/API/HTMLMediaElement)`
+ sont soumises à un mécanisme de sécurité appelé [autoplay policy (en-US)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices)
+
+ - cela signifie essentiellement que vous ne pouvez pas lire 
+automatiquement l'audio lorsqu'une page se charge — vous devez permettre
+ à vos utilisateurs de déclencher la lecture audio par le biais d'un 
+contrôle comme un bouton. Cette mesure est prise parce que la lecture 
+automatique de l'audio est généralement très ennuyeuse et que nous ne 
+devrions pas y soumettre nos utilisateurs.
+
+Dans le cadre de notre application, nous allons devoir demander au user de bien vouloir accepter d'authoriser l'application à lui envoyer des notifications. 
+
+**Requêtes silencieuses**
+
+Certaines fonctionnalités de la spécification HTML permettent de demander au navigateur d’émettre des requêtes silencieuses sans passer par l’exécution de code
+JavaScript ou CSS. Comme tout comportement qui conduit le navigateur
+d’une victime à initier une connexion de manière silencieuse, ces
+requêtes sont potentiellement indésirables et présentent des
+risques allant de la fuite d’informations jusqu’à l’exploitation
+de failles CSRF en passant par la réalisation d’attaques par déni
+de service distribué (DDoS).
+
+Exemple : 
+Ce genre de fonctionnalité est l’attribut ping. Une balise HTML peut, si
+celle-ci présente un attribut href, comporter un attribut ping en
+complément. L’attribut ping contient alors une liste d’URLs vers
+lesquelles seront réalisées des requêtes POST lorsque le lien sera
+cliqué. Les URLs définies par l’attribut ping peuvent se situer
+en dehors de l’Origin et son utilisation relève généralement du
+tracking publicitaire.
+
+**Sanitization** : 
+C'est l’action de nettoyer, dans le sens ou elle permet de mettre en
+place un filtre afin de traiter les informations reçues et
+voir si elle correspondent plus au moins au résultat attendu.
+
+Exemple :
+Dans le cas d’un formulaire d’inscription, la sanitization
+met un filtre afin de vérifier que dans le champs email, il s’agit
+bel et bien d’un email entré dans le champ.
 
 
