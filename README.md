@@ -26,9 +26,28 @@ Pour cette application , nous avons été confronté à différentes problèmati
       Pour assurer la sécurité des traitements et la traçabilité des accès et des actions des utilisateurs , nous allons enregistrer dans des « fichiers journaux » ou (« logs ») des activités des utilisateurs, des anomalies et des événements liés à la sécurité. Obligation posée à l’article 5 du RGPD, fortement recommandé par CNIL(a Commission nationale de l’informatique et des libertés)
 
 
-# d\ Audit: qu’est-ce que l'Audit ?
-    Pour garder un oeil sur touts les utilisar de l'application, nous allons utiliser AUDIT de base de données, est un contrôle de sécurité de base de données impliquant plusieurs aspects de surveillance. Il permet aux administrateurs de contrôler l'accès, de savoir qui utilise la base de données et ce que les utilisateurs font avec la base de données.
+# d\ Audit: qu’est-ce que l'Audit(PASSI) ?
+Un audit de cybersécurité est un audit qui vise à améliorer le niveau de sécurité des systèmes d’information. Cela va des tests d’intrusion aux tests de configuration, aux audits d’architecture et aux audits de la politique de sécurité des entreprises. Pour garantir la bonne réalisation de ces audits, il est fortement recommandé d’avoir recours à un prestataire qualifié PASSI par l’Agence nationale de la sécurité des systèmes d’information (ANSSI).
 
+pourquoi audit(PASSI):
+
+•    D’évaluer le niveau de sécurité de votre système d’information
+•    De déterminer les écarts par rapport aux normes
+•    De détecter d’éventuelles failles de sécurité
+
+Elles peuvent porter sur cinq domaines :
+
+Tests d’intrusion
+    Le principe du test d’intrusion est de découvrir des vulnérabilités sur le système d’information et de vérifier leur exploitabilité et leur impact, dans les conditions réelles d’une attaque, à la place d’un attaquant potentiel.
+
+Audit d’architecture
+    Il consiste en la vérification de la conformité des dispositifs matériels et logiciels. Il est efficacement accompagné de tests d’intrusion mais peut être réalisé seul.
+
+Audit de configuration
+    Il s’agit pour l’auditeur de vérifier conformément à l’état de l’art ou aux exigences et règles spécifiques de l’auditer, la sécurité des configurations de vos équipements et serveurs. Cet audit est efficacement accompagné de tests d’intrusion mais peut être réalisé seul.
+
+Audit de code source
+    Il s’agit d’analyser le code de vos applications afin de détecter d’éventuelles faiblesses. L’audit de code source doit permettre d’éviter les fuites d’information et les altérations du fonctionnement du système d’information.
 
 # e\ Défense en profondeur:
     Pour assurer la securité de l'application, nous allons appliquer La défense en profondeur (DiD) est une approche de la cybersécurité dans laquelle une série de mécanismes défensifs sont superposés afin de protéger les données et informations précieuses. Si un mécanisme échoue, un autre intervient immédiatement pour contrecarrer une attaque
