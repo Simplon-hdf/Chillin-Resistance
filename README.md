@@ -2,7 +2,7 @@
 
 Pour cette application , nous avons été confronté à différentes problèmatiques concernant la sécurité. Nous avons mis en oeuvre un process détaillé pour chaque grande partie importante que nous allons décrire ci-dessous.
 
-# Stratégie de Sécurisation d'une application🔒
+## Stratégie de Sécurisation d'une application🔒
 
    Mesures visant à empêcher le vol ou le piratage des données.
 
@@ -14,7 +14,7 @@ Nous avons utilisé la sauvegaSimon-Libert/Chillin-Resistancerde (backup en angl
 Pour realiser l'objectif de la sauvegarde, nous avons utilisé la stratégie de sauvegarde la pluce efficace (La stratégie de sauvegarde 3-2-1).
 
 ## Nos sauvegardes grâce à la stratégie 3-2-1(3-2-1 backup rules):
-   # La stratégie de sauvegarde 3-2-1 est composée de trois règles, elles sont les suivantes :
+   ## La stratégie de sauvegarde 3-2-1 est composée de trois règles, elles sont les suivantes :
 
    * Trois copies de données - Cela inclut les données d'origine et au moins deux sauvegardes.
 
