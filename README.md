@@ -443,3 +443,179 @@ Parmi les exemples d’authentification forte reposant sur un facteur de connais
 - Les protocoles de type PAKE (Password-Authenticated Key Agreement) comme SPAKE2 ou OPAQUE.
 
 On peut ainsi différencier une authentification multifacteur « faible » d’une authentification multifacteur forte lorsque cette dernière fait intervenir au moins un facteur d’authentification considéré comme fort.
+
+## Les classes d'attaques
+
+### XSS :
+
+Cross-Site Scripting, est une attaque visant la récupération des données de l’utilisateur (tel que son nom, prenom, information bancaire ect..). Elle à lieu par l’injection de donnée dans une page web, dans le but de provoquer un comportement particulier du navigateur qui va interpréter cette injection. De ce fait, ses injections ont la particularité d’être dans langages interpréter directement par la navigateur (ex : JavaScript ou HTML).
+Ex :
+
+*\<script>*
+*window.location=’[http://www\_site\_dangereux\_et\_compromettant.com](http://www_site_dangereux_et_compromettant.com)’;*
+*\</script>*
+
+De ce fait je vous propose les recommandation sur lesquels nous comptons nous appuyer pour la réaliser du projet. Ces recommandations ont était étudié et traiter afin de choisir ici seulement celle qui vont avoir un effet de protection sur l’application contre les attaque XSS. Vous trouverez donc le détails des recommandations et de leur utilité contre les attaque XSS.
+<br>
+* R4 : Utiliser l’API DOM
+La vulnérabilité XSS dépend de la méthode utilisée pour présenter les contenus aux utilisateurs.
+*
+
+Template String :
+var ligne = \`
+< th >$ { meteo . c i t y . name } < / th >
+< td >$ { meteo . weather . tempera ture } < td >\` ;
+/ / Risque XSS
+var node = document . createElemen t ( ” t r ” ) ;
+node . innerHTML = li g n e ;
+/ / Risque XSS
+document . getElementBy Id ( ’ di s pl a y−g ri d ’ ) . appendChild ( node ) ;
+
+Dans ce cas de figure il est tout à fait possible que l’utilisateur entre comme valeur :
+
+meteo . c i t y . name = ” < i f r ame s r c = \ ” h t tp : / / au t re . s i t e . web \ ” > ”
+
+Ce contenu sera interprété dans ce contexte.
+
+De ce fait, l’utilisation côté client de Template String ES6, présente une vulnérabilité par rapport à l’utilisation de la balise HTML < t e m p l a t e >.
+
+<br>
+Tans dis que dans le cas de l’utilisation de la balise HTML < t e m p l a t e >.
+
+< t e m p l a t e id = 'ligne'>
+< tr >
+< th id='ville'>$température< /td>
+< /tr>
+< /template>
+
+var template = document.querySelector('#ligne);
+var ligne = template.cloneNode(true);
+ligne.content.querySelector('#ville').textContent = meteo.city.name;
+ligne.content.querySelecyor('#temperature').textContent = meteo.weather.temperature;
+document.getElementById('display-grid').appendChild(ligne.content);
+
+Ce contenu sera affiché par le navigateur seulement, il ne sera pas interprété.
+
+L’utilisation côté client de Template String ES6, présente une vulnérabilité par rapport à l’utilisation de la balise HTML < template>.
+<br>
+* R5 : Dissocier clairement la composition des pages web
+
+Il est recommandé de dissocier clairement les données (JSON), la structure (HTML), le style (CSS) et la logique (JavaScript) d’une page web afin de réduire le risque d’occurrence de vulnérabilités XSS.
+<br>
+* R8 : Vérifier la conformité des données issues de sources externes
+
+L’en-tête non-standard X-XSS-Protection n’est plus préconisé pour se prémunir des vulnérabilités XSS. Cet en-tête permettait la configuration d’une heuristique de filtrage XSS implémentée par les navigateurs. L’augmentation de la surface d’attaque entraînée par l’implémentation de ce filtre, l’introduction de nouvelles vulnérabilités et l’existence de contournements font que le support de ce mécanisme est en cours de retrait par certains navigateurs et a déjà été retiré par d’autres.
+<br>
+* R9 : Proscrire l'usage de la fonction eval()
+
+La fonction eval est dédiée à la transformation de chaîne de caractères en code JavaScript. L’usage de cette fonction doit être proscrit.
+
+Les fonctions JavaScript permettant la modification de contenu par insertion de fragment interprétable sont des fonctions susceptibles d’injecter du code malveillant. L’usage de ces fonctions dans un site ou une application web augmente à la fois la probabilité d’apparition et l’impact d’une vulnérabilité XSS.
+<br>
+* R10 : Proscrire l'usage de constructions basées sur l'évaluation de code
+
+Il est fréquent que les ressources utilisées, CSS, fontes ou JavaScript, soient externes au site consulté et hébergées par des Content Delivery Networks (CDNs) afin d’améliorer la disponibilité du site et d’économiser de la bande passante. Cette pratique présente cependant des risques car elle étend la surface d’attaque jusqu’aux CDNs. En effet, par défaut une ressource corrompue ne sera pas détectée et se diffusera sur tous les sites qui en font usage. L’utilisation d’un mécanisme de vérification de l’intégrité des ressources issues d’un CDN, tel que Subresource Integrity (SRI, [12]), permet de s’assurer que les fichiers de ressources actifs correspondent bien à ceux qui ont été audités et validés en phase d’intégration logicielle. Une meilleure maîtrise du contenu présenté aux utilisateurs limite la vulnérabilité au XSS en cas, par exemple, de compromission d’un CDN.
+<br>
+* R12 : Contrôler l'intégrité des contenus tiers
+
+Dans le cas d’un site en HTTPS, il est recommandé de mettre en œuvre systématiquement le contrôle de l’intégrité des ressources via SRI afin de réduire le risque de vulnérabilité XSS, en particulier pour les contenus issus d’un CDN.
+<br>
+* R13 : Restreindre les contenus aux ressources fiables
+
+Il est recommandé de mettre en œuvre CSP afin de présenter aux navigateurs une liste des sites reconnus comme présentant des ressources fiables et ainsi contribuer au principe de moindre privilège en réduisant le risque potentiel de vulnérabilité XSS.
+<br>
+* R15 : Interdire des contenus inline
+
+Notons que, par l’interdiction de l’inclusion de code JavaScript et CSS inline (i.e. directement dans le HTML), CSP contribue à la réduction de la surface d’attaque et donc de la probabilité d’apparition d’une vulnérabilité XSS. En outre, son fonctionnement par déclaration des domaines atteignables réduit également l’exploitabilité de telles vulnérabilités (i.e. le post-XSS), puisqu’un attaquant ne pourra pas demander au navigateur de récupérer du code malveillant ou de divulguer une information si cela requiert l’accès à un site qui ne figure pas dans la liste d’autorisations.
+
+<br>
+### Clickjacking :
+
+Le détournement de clic, ou clickjacking, est un type d’attaque dans lequel une page web trompeuse incite un utilisateur légitime à cliquer sur du contenu en apparence légitime qui le mène en réalité à effectuer des actions, à son insu, sur d’autres sites. Ces attaques sont en général mises en œuvre au moyen d’une page piégée incluant des cadres (iframes) invisibles qui pointent vers des sites légitimes sur lesquels l’utilisateur piégé a ouvert une session. La protection contre ce type d’attaques consiste en la mise en place de mécanismes qui interdisent au navigateur l’inclusion du site à protéger dans un site tiers au travers d’une frame ou iframe. La directive frame-ancestors de CSP est une contre-mesure au détournement de clic car elle permet de spécifier une liste d’origines depuis lesquelles le navigateur a le droit exclusif de charger le site protégé dans un cadre.
+
+* R16 : Définir la directive default-src
+La directive frame-ancestors n’est pas supportée par l’implémentation en balise HTML de CSP. La protection contre le clickjacking avec CSP implique sa mise en œuvre au moyen de l’en-tête HTTP dédié.
+*
+
+### CSRF :
+
+Cross-Site Request Forgery, est une attaque qui consiste à à faire réaliser à une utilisateur des actions privilégiées sur une application autre que celle sur laquelle il est connecté. Afin de pouvoir réaliser cette attaque, l faut que l’utilisateur soit authentifié sur le site sur lequel il possède des droits. Cette attaque passe par la mise en place d’un site piège qui, lorsque un utilisateur ce connecte dessus, lui fait réaliser à son issu des actions sur un autre site sur lequel il a des droits.
+Pour le contrer on ajoute des jetons CSRF, qui possède une valeur unique généré aléatoirement coté serveur et envoyé au client.
+<br>
+* R19 : Etudier les risques liés à la collecte de rapports CSP
+
+Certaines fonctionnalités de la spécification HTML [23] permettent de demander au navigateur d’émettre des requêtes silencieuses sans passer par l’exécution de code JavaScript ou CSS. Comme tout comportement qui conduit le navigateur d’une victime à initier une connexion de manière silencieuse, ces requêtes sont potentiellement indésirables et présentent des risques allant de la fuite d’informations jusqu’à l’exploitation de failles CSRF en passant par la réalisation d’attaques par déni de service distribué (DDoS).
+<br>
+* R31 : Limiter le transit des cookies aux flux sécurisés
+
+Dès lors que des cookies sont nécessaires et que le site ou l’application n’est accessible qu’en HTTPS, le flag Secure doit être utilisé. Enfin, l’attribut SameSite permet de réduire drastiquement la vulnérabilité aux attaques CSRF, dans la mesure où il permet d’indiquer au navigateur dans quelles conditions il est acceptable d’émettre un cookie en fonction du contexte de navigation en cours.
+
+### SQLi :
+
+est une injection de code SQL (langage pour les données). Cette attaque consiste en la transmission de code malveillant parmi les données entrantes. Cette attaque à généralement lieu dans des champs de formulaire. Lorsque cette attaque à lieu, elle occasionne la perte de contrôle sur les données en base de données, ce qui peut mener à être récupéré, ou modifié et/ou supprimé.
+<br>
+* R25 : Proscrire l'usage de l'API Web SQL Database
+
+Interdire l’usage de l’API Web SQL Database, désormais obsolète.
+
+### SRI :
+
+Subresource Integrity, permet d’exposer via l’attribut intergrity le résultat attendu d’un hash.
+Le SRI se met en place lors du chargement d’une ressource. Son objectif est de protégé en vérifiant le résultat reçu par rapport au résultat attendu d’une ressource. Dans le cas du chargement d’une ressource tel que bootstrap, le résultat possède une empreinte propre à lui, le SRI permet de vérifier si cette empreinte est bien celle attendu, dans le cas ou elle l’est, la page s’affiche correctement dans le cas ou l’empreinte est différente, le SRI bloque le chargement de la ressource.
+
+La compromission des ressources applicatives : consiste en un changement sur le site ou sur l’application afin de partager une idée politique ou de dénigrer le propriétaire ou revendiquer l’attaque afin de montrer notre savoir-faire.
+Point d’eau : Vise un tendre un piège aux utilisateurs habituels qui vont activer une charge de malveillance sur le site. Attaques discrète qui ferait en sorte de ne pas être repérer.
+Cette attaque a pour but d’infecter l’ordinateur des utilisateurs habituel.
+
+Le vol de données : Souvent à but lucratif, perte de confidentialité et atteinte à la réputation.
+Vol de donnée, comme compte bancaire, nom, prénom, adresse ect…
+Elle est réalisée dans un but souvent lucratif et aboutit la plupart du temps à des usurpations d’identité ou à des paiements frauduleux.
+
+Le déni de service : a pour objet de rendre indisponible le site attaqué pour ses utilisateurs légitimes que ce soit par l’arrêt ou par un ralentissement considérable du service.
+
+### La compromission des ressources applicatives :
+
+Consiste en un changement sur le site ou sur l’application afin de partager une idée politique ou de dénigrer le propriétaire ou revendiquer l’attaque afin de montrer notre savoir-faire.
+Point d’eau : Vise un tendre un piège aux utilisateurs habituels qui vont activer une charge de malveillance sur le site. Attaques discrète qui ferait en sorte de ne pas être repérer.
+Cette attaque a pour but d’infecter l’ordinateur des utilisateurs habituel.
+
+### Le vol de données :
+
+Souvent à but lucratif, perte de confidentialité et atteinte à la réputation.
+Vol de donnée, comme compte bancaire, nom, prénom, adresse ect…
+Elle est réalisée dans un but souvent lucratif et aboutit la plupart du temps à des usurpations d’identité ou à des paiements frauduleux.
+
+### Le déni de service :
+
+Il a pour objet de rendre indisponible le site attaqué pour ses utilisateurs légitimes que ce soit par l’arrêt ou par un ralentissement considérable du service.
+
+### Cookies
+
+Traduction de cookies
+    <span class="colour" style="color:var(--vscode-markdown-wysText)">« Cookie » signifie « biscuit » en anglais. Le terme actuel dérive de l’expression « magic cookies », qui désigne un paquet de données.</span>
+
+Exemple d'utilisation :
+
+De la même manière qu'une emprunte laisse une trace sur le sol, les cookies laissent la trace d'un passage sur un site web.
+
+Definition:
+    Les cookies furent inventés au milieu des années 1990 par les Américains John Giannandrea et Lou Montulli. Les cookies se présentent sous la forme de fichiers textes, qui sont automatiquement enregistrés par le navigateur sur le disque dur lorsqu’un visiteur se rend sur un site web. Les cookies ont été développés pour améliorer l’expérience de l’utilisateur, pour permettre aux sites web de se souvenir du passage de telle personne. Les cookies ont ainsi joué un rôle important dans le développement d’internet tel qu’on le connait aujourd’hui. Les cookies ne sont pas des logiciels malveillants ni des virus. Chaque cookie a une date de péremption, variable en fonction des sites.
+
+A quoi servent les cookies ?
+
+C’est simple : les cookies donnent des informations sur les préférences de la personne qui visite le site. Ce dernier est ainsi en mesure de reconnaitre et conserver des informations, par exemple le choix de la langue, les identifiants de connexion, les pages consultées ou par exemple le contenu d’un panier. Les cookies sont aussi utiles pour obtenir des statistiques sur le site web en question :
+temps de consultation des pages, taux de rebond, clics… Tout ceci permet d’améliorer le trafic sur le site.
+
+<span class="colour" style="color:var(--vscode-markdown-wysText)">Il existe aussi un autre type de cookies : les cookies tiers. Ces derniers possèdent un rôle très important pour la publicité ciblée. En effet, ce sont eux, en gardant en mémoire les pages que vous consultez, qui permettent ensuite l’affichage de publicités liées sur d’autres sites. Rien d’étonnant donc si vous remarquez des publicités pour des canapés sur votre fil Facebook après avoir consulté un site d’ameublement.</span>
+
+
+Comment fonctionnent les cookies ?
+
+Les cookies fonctionnent dans le cadre du protocole de transfert hypertexte (HTTP), qui est un protocole de communication entre le client (l’internaute) et le serveur (le site web). Les cookies sont insérés sous forme de code dans chaque requête qu’envoie le serveur d’un site. Les cookies sont enregistrés par le navigateur dans un seul fichier.
+
+### Bug bounty
+<br>
+Definition:
+    Bug bounty est une récompense monétaire donnée aux pirates éthiques pour avoir réussi à découvrir et à signaler une vulnérabilité ou un bogue au développeur de l'application.
+
+
