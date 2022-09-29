@@ -582,16 +582,6 @@ Interdire l’usage de l’API Web SQL Database, désormais obsolète.
 Subresource Integrity, permet d’exposer via l’attribut intergrity le résultat attendu d’un hash.
 Le SRI se met en place lors du chargement d’une ressource. Son objectif est de protégé en vérifiant le résultat reçu par rapport au résultat attendu d’une ressource. Dans le cas du chargement d’une ressource tel que bootstrap, le résultat possède une empreinte propre à lui, le SRI permet de vérifier si cette empreinte est bien celle attendu, dans le cas ou elle l’est, la page s’affiche correctement dans le cas ou l’empreinte est différente, le SRI bloque le chargement de la ressource.
 
-La compromission des ressources applicatives : consiste en un changement sur le site ou sur l’application afin de partager une idée politique ou de dénigrer le propriétaire ou revendiquer l’attaque afin de montrer notre savoir-faire.
-Point d’eau : Vise un tendre un piège aux utilisateurs habituels qui vont activer une charge de malveillance sur le site. Attaques discrète qui ferait en sorte de ne pas être repérer.
-Cette attaque a pour but d’infecter l’ordinateur des utilisateurs habituel.
-
-Le vol de données : Souvent à but lucratif, perte de confidentialité et atteinte à la réputation.
-Vol de donnée, comme compte bancaire, nom, prénom, adresse ect…
-Elle est réalisée dans un but souvent lucratif et aboutit la plupart du temps à des usurpations d’identité ou à des paiements frauduleux.
-
-Le déni de service : a pour objet de rendre indisponible le site attaqué pour ses utilisateurs légitimes que ce soit par l’arrêt ou par un ralentissement considérable du service.
-
 ### La compromission des ressources applicatives :
 
 Consiste en un changement sur le site ou sur l’application afin de partager une idée politique ou de dénigrer le propriétaire ou revendiquer l’attaque afin de montrer notre savoir-faire.
